@@ -1,28 +1,43 @@
 package in.kodder;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
+import java.io.IOException;
+
+// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
+// then press Enter. You can now see whitespace characters in your code.
 public class Main {
-    public static void main(String[] args) {
-        OkHttpClient client = new OkHttpClient();
-        String url = "https://fakestoreapi.com/products/";
+    public static void main(String[] args) throws IOException {
 
-        Request request = new Request.Builder()
-                .url(url)
+        System.out.println("Hello");
+//        OkHttpClient client = new OkHttpClient();
+//
+//        String url = "https://jsonplaceholder.typicode.com/todos/1/";
+//
+//        Request request = new Request.Builder()
+//                .url(url)
+//                .build();
+//
+//        try (Response response = client.newCall(request).execute()) {
+//            if(!response.isSuccessful()) {
+//                System.out.println("Something went wring !!!!");
+//            }
+//            System.out.println(response.body().string());
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://jsonplaceholder.typicode.com/")
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        try(Response response = client.newCall(request).execute()){
-            if (response.isSuccessful()) {
-                assert response.body() != null;
-                String responseData = response.body().string();
-                System.out.println("Response Data: " + responseData);
-            } else {
-                System.out.println("Request failed with code: " + response.code());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        TodoService todoService = retrofit.create(TodoService.class);
+
+        Todo t = todoService.getTodoById("1").execute().body();
+
+        System.out.println("Todo object downloaded is" + t.toString());
+
     }
 }
